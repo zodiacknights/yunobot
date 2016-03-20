@@ -61,9 +61,18 @@ module.exports = function(localData, send){
 		},
 		push: function(name, room, arr){
 			if(!getPath(arr[2])) return pathNotFound(room);
-			var cmd = 'cd ' + getPath(arr[2]) + ' | git push origin ' + arr[3];
-			exec(cmd).then(function(){
-				send(room, '*hnnng...* there we go, ' + arr[2] + ' push complete!');
+			var cmd = 'cd ' + getPath(arr[2]) + ' | git branch';
+			var branch;
+			exec(cmd).then(function(stdout){
+				var branches = stdout.split('\n');
+				branch = branches.find(function(branch){
+					return branch[0] === '*';
+				});
+				branch = branch.slice(2);
+				cmd = 'cd ' + getPath(arr[2]) + ' | git push origin ' + branch;
+				return exec(cmd);
+			}).then(function(){
+				send(room, '*hnnng...* there we go, ' + arr[2] + ' push to branch ' + branch + ' complete!');	
 			}).catch(function(err){
 				handleErr(err, room);
 			});

@@ -45,7 +45,7 @@ module.exports = function(localData){
 		var arr = parse(message);
 		if(checkRoom(room)){
 			console.log('(private)');
-			if(arr[0] !== 'yuno') arr.unshift('yuno');
+			if(arr[0].slice(0, 4) !== 'yuno') arr.unshift('yuno');
 		}
 		if(checkRoom(room) && privateCommand[arr[1]]) privateCommand[arr[1]](name, room, arr); 
 		else if(command[arr[1]]) command[arr[1]](name, room, arr);
