@@ -19,14 +19,16 @@ module.exports = function(localData, send){
 	return {
 		addpath: function(name, room, arr){
 			localData.path[arr[2]] = arr[3];
-			send(room, 'i added the new path for you.', function(){
-				fs.writeFileAsync('./LOCAL_DATA.json', JSON.stringify(localData, null, 2));
+			fs.writeFileAsync('./LOCAL_DATA.json', JSON.stringify(localData, null, 2)).then(function(){
+				send(room, 'i added the new path for you.');
+			}).catch(function(err){
+				handleErr(err, room);
 			});
 		},
 		cmd: function(name, room, arr){
 			var cmd = 'cd ' + (getPath(arr[2]) ? getPath(arr[2]) : arr[2]) + ' | ' +  arr.slice(3).join(' ');
-			exec(cmd).then(function(result){
-				send(room, '*yells command...* it worked! ' + (result.stdout ? ' it says:\n' + result.stdout : ''));
+			exec(cmd).then(function(stdout){
+				send(room, '*yells command...* it worked!' + (stdout ? ' it says:\n' + result.stdout : ''));
 			}).catch(function(err){
 				handleErr(err, room);
 			});
@@ -35,19 +37,19 @@ module.exports = function(localData, send){
 			if(!getPath(arr[2])) return pathNotFound(room);
 			var commitMsg = arr.slice(3).join(' ');
 			commitMsg = commitMsg.slice(0, 1).toUpperCase() + commitMsg.slice(1);
-			var cmd = 'cd ' + getPath(arr[2]) + ' | git commit -am "' + commitMsg + '"';
-			send(room, '*writes commit mesage...* there, a hand written note.', function(){
-				exec(cmd).then(function(stdout){
-					console.log(stdout);
-				}).catch(function(err){
-					handleErr(err, room);
-				});
+			var cmd = 'cd ' + getPath(arr[2]) + ' | git add -A && git commit -am "' + commitMsg + '"';
+			exec(cmd).then(function(stdout){
+				send(room, '*writes commit mesage...* there, a hand written note.');
+			}).catch(function(err){
+				handleErr(err, room);
 			});
 		},
 		delpath: function(name, room, arr){
 			delete localData.path[arr[2]];
-			send(room, 'path deleted. i\'m going to miss that one...', function(){
-				fs.writeFileAsync('./LOCAL_DATA.json', JSON.stringify(localData, null, 2));
+			fs.writeFileAsync('./LOCAL_DATA.json', JSON.stringify(localData, null, 2)).then(function(){
+				send(room, 'path deleted. i\'m going to miss that one...');
+			}).catch(function(err){
+				handleErr(err, room);
 			});
 		},
 		pull: function(name, room, arr){
