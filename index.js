@@ -5,7 +5,7 @@
 	var fs = Promise.promisifyAll(require('fs'));
 	var localData;
 	try{
-		localData = require('./LOCAL_DATA.json');
+		localData = require('./LOCAL_DATA');
 	}catch(err){
 		fs.writeFileAsync('LOCAL_DATA.json', JSON.stringify({
 			login: {
@@ -16,8 +16,6 @@
 			privateroom: ''
 		}, null, 2)).then(function(){
 			throw 'yuno: please open LOCAL_DATA.json and fill in my login info.';
-		}).catch(function(err){
-			throw err;
 		});
 	}
 	var setupWS = require('./setupWS.js');
@@ -51,8 +49,6 @@
 			var wsUrl = JSON.parse(res.body).url;
 			console.log('yuno: connecting to ' + wsUrl + '.');
 			setupWS(wsUrl, localData);
-		}).catch(function(err){
-			throw err;
 		});
 	}
 })();
