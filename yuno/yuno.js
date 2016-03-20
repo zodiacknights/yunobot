@@ -12,29 +12,32 @@ module.exports = function(localData){
 	var defaultResponses = [
 		['how do i ', '? :confused:'],
 		['*tries her best to ', '.*'],
-		['how about you ', '. :smirk:']
+		['how about you ', '. :smirk:'],
+		['*puts knife away* ok, i\'ll ', ' instead.']
 	];
 
 	function getDefaultResponse(message){
-		var num = Math.floor(Math.random() * (defaultResponses.length + 1));
+		var num = Math.floor(Math.random() * defaultResponses.length);
 		return defaultResponses[num][0] + message + defaultResponses[num][1];
 	}
 
 	function parse(message){
-		message = message.replace(/[,\*]/g, '');
+		message = message.replace(/[\*]/g, '');
 		message = message.toLowerCase();
 		return message.split(' ');
 	}
 
-	function send(room, message){
+	function send(room, message, cb){
 		request.postAsync({
 			url: 'https://discordapp.com/api/channels/' + room + '/messages',
 			form: {content: message},
 			headers: {Authorization: localData.token}
 		}).then(function(res){
 			console.log('yuno: ' + message);
+			if(cb) cb();
 		}).catch(function(err){
 			console.log(err);
+			if(cb) cb();
 		});
 	}
 
