@@ -89,7 +89,6 @@ module.exports = function(localData, send){
 					day.push(forecast.high);
 					night.push(forecast.low);
 				});
-				console.log(night)
 				var convert = function(forecast){
 					var temps = [];
 					_.forEach(forecast, function(value, key){
@@ -109,13 +108,10 @@ module.exports = function(localData, send){
 							temps.push({'temp':'cold'});
 						}
 					});
-					// console.log(temps)
 					return temps;
 				}
 				day = convert(day);
 				night = convert(night);
-				// console.log(night)
-				// console.log(day)
 				if (_.every(day, ['temp', day[0].temp])){
 					// if (day[0].temp === 'scorching' || day[0].temp === 'hot' ){
 					// 	highs += ':sunny::sweat_drops: ';
