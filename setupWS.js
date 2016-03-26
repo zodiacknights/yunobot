@@ -30,7 +30,7 @@ module.exports = function(wsUrl, localData){
 		if(data.t === 'READY' || data.t === 'RESUMED') keepAlive(data.d.heartbeat_interval);
 		if(data.t === 'MESSAGE_CREATE' &&
 			(data.d.content.split(' ')[0].toLowerCase() === 'yuno' || 
-				(data.d.channel_id === localData.privateroom && data.d.author.username !== 'yunobot'))){
+				(data.d.channel_id === localData.privateroom && data.d.author.username !== localData.screenname))){
 			console.log(data.d.author.username + ': ' + data.d.content);
 			yuno(data.d.id, data.d.author.username, data.d.channel_id, data.d.content);
 		}

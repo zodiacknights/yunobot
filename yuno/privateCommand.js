@@ -16,6 +16,13 @@ module.exports = function(localData, send){
 		send(room, 'uh oh, it didn\'t work' + (err ? ' because:\n' + err : '.'));
 	}
 
+	function addIgnores(cmd, checkout){
+		var action = checkout ? 'checkout' : 'reset';
+		return localData.ignore.reduce(function(newCmd, ignore){
+			return newCmd + 'git ' + action + ' -- ' + ignore + ' && ';
+		}, cmd);
+	}
+
 	return {
 		addpath: function(name, room, arr){
 			localData.path[arr[2]] = arr[3];
@@ -25,10 +32,20 @@ module.exports = function(localData, send){
 				handleErr(err, room);
 			});
 		},
-		cmd: function(name, room, arr){
-			var cmd = 'cd ' + (getPath(arr[2]) ? getPath(arr[2]) : arr[2]) + ' | ' +  arr.slice(3).join(' ');
+		// cmd: function(name, room, arr){
+		// 	var cmd = 'cd ' + (getPath(arr[2]) ? getPath(arr[2]) : arr[2]) + ' && ' +  arr.slice(3).join(' ');
+		// 	exec(cmd).then(function(stdout){
+		// 		send(room, '*yells command...* it worked!' + (stdout ? ' it says:\n' + result.stdout : ''));
+		// 	}).catch(function(err){
+		// 		handleErr(err, room);
+		// 	});
+		// },
+		branch: function(name, room, arr){
+			if(!getPath(arr[2])) return pathNotFound(room);
+			var branch = arr[3];
+			var cmd = 'cd ' + getPath(arr[2]) + ' && git checkout -b ' + branch + ' upstream/master';
 			exec(cmd).then(function(stdout){
-				send(room, '*yells command...* it worked!' + (stdout ? ' it says:\n' + result.stdout : ''));
+				send(room, '*breaks off a tree branch...* don\'t worry ' + branch + ', yuno will protect you.');
 			}).catch(function(err){
 				handleErr(err, room);
 			});
@@ -37,7 +54,9 @@ module.exports = function(localData, send){
 			if(!getPath(arr[2])) return pathNotFound(room);
 			var commitMsg = arr.slice(3).join(' ');
 			commitMsg = commitMsg.slice(0, 1).toUpperCase() + commitMsg.slice(1);
-			var cmd = 'cd ' + getPath(arr[2]) + ' | git add -A && git commit -am "' + commitMsg + '"';
+			var cmd = 'cd ' + getPath(arr[2]) + ' && git add -A && ';
+			addIgnores(cmd);
+			cmd += 'git commit -m "' + commitMsg + '"';
 			exec(cmd).then(function(stdout){
 				send(room, '*writes commit mesage...* there, a hand written note.');
 			}).catch(function(err){
@@ -54,7 +73,9 @@ module.exports = function(localData, send){
 		},
 		pull: function(name, room, arr){
 			if(!getPath(arr[2])) return pathNotFound(room);
-			var cmd = 'cd ' + getPath(arr[2]) + ' | git pull upstream master';
+			var cmd = 'cd ' + getPath(arr[2]) + ' && ';
+			addIgnores(cmd, true);
+			cmd += 'git pull upstream master';
 			exec(cmd).then(function(){
 				send(room, '*pulls with all her strength..* i did it, pull complete!');
 			}).catch(function(err){
@@ -63,7 +84,7 @@ module.exports = function(localData, send){
 		},
 		push: function(name, room, arr){
 			if(!getPath(arr[2])) return pathNotFound(room);
-			var cmd = 'cd ' + getPath(arr[2]) + ' | git branch';
+			var cmd = 'cd ' + getPath(arr[2]) + ' && git branch';
 			var branch;
 			exec(cmd).then(function(stdout){
 				var branches = stdout.split('\n');
@@ -71,7 +92,7 @@ module.exports = function(localData, send){
 					return branch[0] === '*';
 				});
 				branch = branch.slice(2);
-				cmd = 'cd ' + getPath(arr[2]) + ' | git push origin ' + branch;
+				cmd = 'cd ' + getPath(arr[2]) + ' && git push origin ' + branch;
 				return exec(cmd);
 			}).then(function(){
 				send(room, '*hnnng...* there we go, ' + arr[2] + ' push to branch ' + branch + ' complete!');	
@@ -81,7 +102,8 @@ module.exports = function(localData, send){
 		},
 		rebase: function(name, room, arr){
 			if(!getPath(arr[2])) return pathNotFound(room);
-			var cmd = 'cd ' + getPath(arr[2]) + ' | git pull --rebase upstream master';
+			var cmd = 'cd ' + getPath(arr[2]) + ' && git pull --rebase upstream master';
+			addIgnores(cmd, true);
 			exec(cmd).then(function(){
 				send(room, '*sorts commits...* let\'s see... this one goes here... aaand rebase complete!');
 			}).catch(function(err){
