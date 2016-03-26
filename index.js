@@ -49,7 +49,6 @@
 			});
 		}).then(function(res){
 			var wsUrl = JSON.parse(res.body).url;
-			console.log('yuno: connecting to ' + wsUrl + '.');
 			setupWS(wsUrl, localData);
 		});
 	}
