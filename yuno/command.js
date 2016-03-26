@@ -1,5 +1,6 @@
 module.exports = function(localData, send){
 	'use strict';
+	var _ = require('lodash');
 	var Promise = require('bluebird');
 	var request = Promise.promisifyAll(Promise.promisify(require('request')));
 	
@@ -41,6 +42,19 @@ module.exports = function(localData, send){
 		roomid: function(name, room, arr){
 			var message = 'i checked for you and the room id is ' + room + '.';
 			send(room, message);
+		},
+		weather: function(name, room, arr){
+			var location = _.capitalize(arr[2]);
+			if (arr[3]) location += " " + _.capitalize(arr[3]);
+			request.getAsync({
+				url:"https://query.yahooapis.com/v1/public/yql?q=select item.condition from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + location + "')&format=json"
+			}).then(function(res){
+				var data = JSON.parse(res.body);
+				var message = "It\'s currently " + data.query.results.channel.item.condition.temp + "\u2109 in " + location + "."
+				send(room, message);
+				}).catch(function(err){
+				console.log(err);
+			});
 		}
 	};
 };
