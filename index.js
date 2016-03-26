@@ -8,12 +8,14 @@
 		localData = require('./LOCAL_DATA');
 	}catch(err){
 		fs.writeFileAsync('LOCAL_DATA.json', JSON.stringify({
+			screenname: '--yuno discord name--',
 			login: {
 				email: '--email--',
 				password: '--password--'
 			},
 			paths: {},
-			privateroom: ''
+			privateroom: '',
+			ignore: []
 		}, null, 2)).then(function(){
 			throw 'yuno: please open LOCAL_DATA.json and fill in my login info.';
 		});
@@ -47,7 +49,6 @@
 			});
 		}).then(function(res){
 			var wsUrl = JSON.parse(res.body).url;
-			console.log('yuno: connecting to ' + wsUrl + '.');
 			setupWS(wsUrl, localData);
 		});
 	}
