@@ -71,6 +71,9 @@ module.exports = function(localData, send){
 				handleErr(err, room);
 			});
 		},
+		online: function(name, room, arr){
+			send(room, 'Welcome back ' + name + '! :heartpulse:');
+		},
 		pull: function(name, room, arr){
 			if(!getPath(arr[2])) return pathNotFound(room);
 			var cmd = 'cd ' + getPath(arr[2]) + ' && ';

@@ -41,6 +41,8 @@ module.exports = function(wsUrl, localData){
 				console.log(data.d.author.username + ': ' + data.d.content);
 				yuno(data.d.id, data.d.author.username, data.d.channel_id, data.d.content);
 			}
+			if(data.t === 'PRESENCE_UPDATE' && data.d.user.id === localData.userid && data.d.status === 'online' && !data.d.guild_id)
+				yuno(data.d.user.id, data.d.user.username, localData.privateroom, 'online');
 		});
 
 		ws.on('close', reconnect);

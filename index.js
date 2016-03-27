@@ -14,6 +14,7 @@
 				password: '--password--'
 			},
 			paths: {},
+			userid: '',
 			privateroom: '',
 			ignore: []
 		}, null, 2)).then(function(){

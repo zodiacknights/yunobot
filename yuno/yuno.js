@@ -2,6 +2,7 @@ module.exports = function(localData){
 	'use strict';
 	var Promise = require('bluebird');
 	var request = Promise.promisifyAll(Promise.promisify(require('request')));
+	var fs = Promise.promisifyAll(require('fs'));
 	var command = require('./command')(localData, send);
 	var privateCommand = require('./privateCommand')(localData, send);
 
@@ -27,7 +28,18 @@ module.exports = function(localData){
 		return message.split(' ');
 	}
 
+	var rateLimit = 1000;
+	var lastSend = Date.now();
+
 	function send(room, message, cb){
+		var now = Date.now();
+		if(lastSend + rateLimit > now){
+			setTimeout(function(){
+				send(room, message, cb);
+			}, lastSend + rateLimit - now);
+			return;
+		}
+		lastSend = Date.now();
 		request.postAsync({
 			url: 'https://discordapp.com/api/channels/' + room + '/messages',
 			form: {content: message},
@@ -45,6 +57,10 @@ module.exports = function(localData){
 		var arr = parse(message);
 		if(checkRoom(room)){
 			console.log('(private)');
+			if(localData.userid !== userID){
+				localData.userid = userID;
+				fs.writeFileAsync('LOCAL_DATA.json', JSON.stringify(localData, null, 2));
+			}
 			if(arr[0].slice(0, 4) !== 'yuno') arr.unshift('yuno');
 		}
 		if(checkRoom(room) && privateCommand[arr[1]]) privateCommand[arr[1]](name, room, arr); 
