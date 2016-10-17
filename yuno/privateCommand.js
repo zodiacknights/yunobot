@@ -55,10 +55,10 @@ module.exports = function(localData, send){
 			var commitMsg = arr.slice(3).join(' ');
 			commitMsg = commitMsg.slice(0, 1).toUpperCase() + commitMsg.slice(1);
 			var cmd = 'cd ' + getPath(arr[2]) + ' && git add -A && ';
-			addIgnores(cmd);
+			cmd = addIgnores(cmd);
 			cmd += 'git commit -m "' + commitMsg + '"';
 			exec(cmd).then(function(stdout){
-				send(room, '*writes commit mesage...* there, a hand written note.');
+				send(room, '*writes commit message...* there, a hand written note.');
 			}).catch(function(err){
 				handleErr(err, room);
 			});
@@ -77,7 +77,7 @@ module.exports = function(localData, send){
 		pull: function(name, room, arr){
 			if(!getPath(arr[2])) return pathNotFound(room);
 			var cmd = 'cd ' + getPath(arr[2]) + ' && ';
-			addIgnores(cmd, true);
+			cmd = addIgnores(cmd, true);
 			cmd += 'git pull upstream master';
 			exec(cmd).then(function(){
 				send(room, '*pulls with all her strength..* i did it, pull complete!');
@@ -105,8 +105,8 @@ module.exports = function(localData, send){
 		},
 		rebase: function(name, room, arr){
 			if(!getPath(arr[2])) return pathNotFound(room);
-			var cmd = 'cd ' + getPath(arr[2]) + ' && git pull --rebase upstream master';
-			addIgnores(cmd, true);
+			var cmd = 'cd ' + getPath(arr[2]) + ' && ';
+			cmd += 'git pull --rebase upstream master';
 			exec(cmd).then(function(){
 				send(room, '*sorts commits...* let\'s see... this one goes here... aaand rebase complete!');
 			}).catch(function(err){
