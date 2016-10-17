@@ -160,7 +160,7 @@ module.exports = function(localData, send){
 			});	
 		},
 		choose: function(name, room, arr){
-			arr = arr.slice(2).join(' ').split(',');
+			arr = arr.slice(2).join(' ').split(', ');
 			var chosen = arr[Math.floor(Math.random() * arr.length)];
 			var message = "I choose " + chosen + "!";
 			send(room, message);
