@@ -15,8 +15,7 @@
 			},
 			paths: {},
 			userid: '',
-			privateroom: '',
-			ignore: []
+			privateroom: ''
 		}, null, 2)).then(function(){
 			throw 'yuno: please open LOCAL_DATA.json and fill in my login info.';
 		});
