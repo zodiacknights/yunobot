@@ -2,6 +2,8 @@ module.exports = function(wsUrl, localData){
 	'use strict';
 	var WebSocket = require('ws');
 	var yuno = require('./yuno/yuno')(localData);
+	var Promise = require('bluebird');
+	var fs = Promise.promisifyAll(require('fs'));
 
 	var keepAliveInterval;
 	var reconnectAttempts = 1;
@@ -39,7 +41,15 @@ module.exports = function(wsUrl, localData){
 				(data.d.content.split(' ')[0].toLowerCase() === 'yuno' || 
 					(data.d.channel_id === localData.privateroom && data.d.author.username !== localData.screenname))){
 				console.log(data.d.author.username + ': ' + data.d.content);
-				yuno(data.d.id, data.d.author.username, data.d.channel_id, data.d.content);
+				yuno(data.d.author.username, data.d.channel_id, data.d.content);
+			}
+			if(data.t === 'PRESENCE_UPDATE' && data.d.user.id === localData.userid && data.d.status === 'online' && !data.d.guild_id)
+				yuno(data.d.user.username, localData.privateroom, 'online');
+			if(data.t === 'TYPING_START' && data.d.channel_id === localData.privateroom){
+				if(localData.userid !== data.d.user_id){
+					localData.userid = data.d.user_id;
+					fs.writeFileAsync('LOCAL_DATA.json', JSON.stringify(localData, null, 2));
+				}
 			}
 		});
 

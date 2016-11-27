@@ -27,7 +27,18 @@ module.exports = function(localData){
 		return message.split(' ');
 	}
 
+	var rateLimit = 1000;
+	var lastSend = Date.now();
+
 	function send(room, message, cb){
+		var now = Date.now();
+		if(lastSend + rateLimit > now){
+			setTimeout(function(){
+				send(room, message, cb);
+			}, lastSend + rateLimit - now);
+			return;
+		}
+		lastSend = Date.now();
 		request.postAsync({
 			url: 'https://discordapp.com/api/channels/' + room + '/messages',
 			form: {content: message},
@@ -41,7 +52,7 @@ module.exports = function(localData){
 		});
 	}
 
-	return function(userID, name, room, message){
+	return function(name, room, message){
 		var arr = parse(message);
 		if(checkRoom(room)){
 			console.log('(private)');

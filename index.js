@@ -14,8 +14,8 @@
 				password: '--password--'
 			},
 			paths: {},
-			privateroom: '',
-			ignore: []
+			userid: '',
+			privateroom: ''
 		}, null, 2)).then(function(){
 			throw 'yuno: please open LOCAL_DATA.json and fill in my login info.';
 		});
@@ -24,9 +24,7 @@
 
 	function getToken(){
 		if(localData.token){
-			return new Promise(function(resolve){
-				resolve();
-			});
+			return Promise.resolve();
 		}else{
 			return request.postAsync({
 				url: 'https://discordapp.com/api/auth/login',
