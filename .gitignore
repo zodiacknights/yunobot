@@ -1,3 +1,4 @@
 node_modules
 LOCAL_DATA.json
 *.log
+.DS_STORE
