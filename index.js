@@ -24,9 +24,7 @@
 
 	function getToken(){
 		if(localData.token){
-			return new Promise(function(resolve){
-				resolve();
-			});
+			return Promise.resolve();
 		}else{
 			return request.postAsync({
 				url: 'https://discordapp.com/api/auth/login',

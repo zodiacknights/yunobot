@@ -106,7 +106,7 @@ module.exports = function(localData, send){
 		},
 		seppuku: function(name, room, arr){
 			send(room, 'i-if you say so...', function(){
-				throw 'yuno: *dies*';
+				process.exit();
 			});
 		}
 	};
