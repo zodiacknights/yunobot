@@ -20,7 +20,6 @@ module.exports = function(wsUrl, localData){
 				op: 2,
 				d: {
 					token: localData.token,
-					v: 3,
 					properties: {
 						$os: 'Windows',
 						$browser: 'Chrome',
@@ -28,7 +27,7 @@ module.exports = function(wsUrl, localData){
 						$referrer: 'https://discordapp.com/@me',
 						$referring_domain: 'discordapp.com'
 					},
-					large_theshold: 100
+					large_theshold: 250
 				}
 			};
 			ws.send(JSON.stringify(connect));
@@ -36,9 +35,10 @@ module.exports = function(wsUrl, localData){
 
 		ws.on('message', function(data){
 			data = JSON.parse(data);
+			console.log(data);
 			if(data.t === 'READY' || data.t === 'RESUMED') keepAlive(ws, data.d.heartbeat_interval);
 			if(data.t === 'MESSAGE_CREATE' &&
-				(data.d.content.split(' ')[0].toLowerCase() === 'yuno' || 
+				(data.d.content.split(' ')[0].toLowerCase() === 'yuno' ||
 					(data.d.channel_id === localData.privateroom && data.d.author.username !== localData.screenname))){
 				console.log(data.d.author.username + ': ' + data.d.content);
 				yuno(data.d.author.username, data.d.channel_id, data.d.content);
