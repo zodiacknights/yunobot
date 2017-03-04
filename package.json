@@ -9,8 +9,16 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.3.4",
+    "discord.js": "^10.0.1",
+    "eslint": "^3.12.0",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
     "lodash": "^4.6.1",
+    "node-opus": "^0.2.4",
     "nodemon": "^1.9.1",
+    "opusscript": "0.0.1",
     "request": "^2.69.0",
     "ws": "^1.0.1"
   }
