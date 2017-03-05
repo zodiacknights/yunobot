@@ -1,8 +1,8 @@
 module.exports = function(localData, send){
   'use strict';
-  var Promise = require('bluebird');
-  var exec = Promise.promisify(require('child_process').exec);
-  var fs = Promise.promisifyAll(require('fs'));
+  const Promise = require('bluebird');
+  const exec = Promise.promisify(require('child_process').exec);
+  const fs = Promise.promisifyAll(require('fs'));
 
   function getPath(path){
     return localData.path[path];
