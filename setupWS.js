@@ -1,22 +1,22 @@
 module.exports = function(wsUrl, localData){
 	'use strict';
-	var WebSocket = require('ws');
-	var yuno = require('./yuno/yuno')(localData);
-	var Promise = require('bluebird');
-	var fs = Promise.promisifyAll(require('fs'));
+	const WebSocket = require('ws');
+  const yuno = require('./yuno/yuno')(localData);
+	const Promise = require('bluebird');
+	const fs = Promise.promisifyAll(require('fs'));
 
-	var keepAliveInterval;
-	var reconnectAttempts = 1;
+	const keepAliveInterval;
+	const reconnectAttempts = 1;
 
 	connect();
 
 	function connect(){
-		var ws = new WebSocket(wsUrl);
+	  const ws = new WebSocket(wsUrl);
 
 		ws.on('open', function(){
 			console.log('yuno: connecting to ' + wsUrl + '.');
 			reconnectAttempts = 1;
-			var connect = {
+			const connect = {
 				op: 2,
 				d: {
 					token: localData.token,
@@ -65,7 +65,7 @@ module.exports = function(wsUrl, localData){
 
 	function reconnect(){
 		console.log('yuno: disconnected from ' + wsUrl + '.');
-		var time = generateInterval(reconnectAttempts);
+		const time = generateInterval(reconnectAttempts);
 
 		setTimeout(function(){
 			reconnectAttempts++;

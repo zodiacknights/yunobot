@@ -1,8 +1,7 @@
 const localData = require('../LOCAL_DATA.json');
-const command = require('./command');
+const commands = require('../commands/index.js');
 const privateCommand = require('./privateCommand');
 
-module.exports = function yuno() {
   function checkRoom(room){
     return room === localData.privateroom;
   }
@@ -24,40 +23,15 @@ module.exports = function yuno() {
     message = message.toLowerCase();
     return message.split(' ');
   }
-
-  var rateLimit = 1000;
-  var lastSend = Date.now();
-
-  function send(room, message, cb){
-    var now = Date.now();
-    if(lastSend + rateLimit > now){
-      setTimeout(function(){
-        send(room, message, cb);
-      }, lastSend + rateLimit - now);
-      return;
-    }
-    lastSend = Date.now();
-    request.postAsync({
-      url: 'https://discordapp.com/api/channels/' + room + '/messages',
-      form: {content: message},
-      headers: {Authorization: localData.token}
-    }).then(function(res){
-      console.log('yuno: ' + message);
-      if(cb) cb();
-    }).catch(function(err){
-      console.log(err);
-      if(cb) cb();
-    });
+  function sendQuery(name, arr){
+    return commands[arr[1]](name,arr);
   }
-
-  return function handleMessage(message) {
+  function handleMessage(message){
     if (message.author.bot) return;
-    console.log(message);
     const name = message.author.username;
     const arr = parse(message.content);
     const privateCommandObj = privateCommand(localData,
       message.channel.sendMessage.bind(message.channel));
-    const commandObj = command(localData, message.channel.sendMessage.bind(message.channel));
     if (checkRoom(message.channel.id)) {
       console.log('(private)');
       if (arr[0].slice(0, 4) !== 'yuno') arr.unshift('yuno');
@@ -65,12 +39,25 @@ module.exports = function yuno() {
     if (arr[0] !== 'yuno') return;
     if (checkRoom(message.channel.id) && privateCommandObj[arr[1]]) {
       privateCommandObj[arr[1]](name, arr);
-    } else if (commandObj[arr[1]]) {
-      commandObj[arr[1]](name, arr);
+    } else if (commands[arr[1]]) {
+      const result = sendQuery(name, arr);
+      if (typeof result === 'string') {
+        message.channel.sendMessage(result);
+      } else {
+        result.then(function (msg) {
+          message.channel.sendMessage(msg);
+        });
+      }
     } else if (!arr[1]) {
       message.channel.sendMessage('hmm?');
     } else {
       message.channel.sendMessage(getDefaultResponse(arr.slice(1).join(' ')));
     }
   };
-};
+
+  module.exports = {
+    checkRoom,
+    getDefaultResponse,
+    parse,
+    handleMessage
+  }
