@@ -1,9 +1,11 @@
-var requireAllPath = require("path").join(__dirname);
-let commands = {}
-require("fs").readdirSync(requireAllPath).forEach(function(file) {
-  if(file !== "index.js"){
-    let fileName = file.slice(0, -3);
-    commands[fileName] = require("./" + file);
+const requireAllPath = require('path').join(__dirname);
+
+const commands = {};
+require('fs').readdirSync(requireAllPath).forEach((file) => {
+  if (file !== 'index.js') {
+    const fileName = file.slice(0, file.lastIndexOf('.'));
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    commands[fileName] = require(`./${file}`);
   }
 });
 
