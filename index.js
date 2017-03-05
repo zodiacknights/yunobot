@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const localData = require('./LOCAL_DATA.json');
 const yuno = require('./yuno/yuno');
-
+// process.on('unhandledRejection', console.error);
 const bot = new Discord.Client();
 
 const token = localData.token;
@@ -10,7 +10,8 @@ bot.on('ready', () => {
   console.log('I am ready!');
 });
 
-bot.on('message', yuno());
+
+bot.on('message', yuno.handleMessage);
 
 // log our bot in
 bot.login(token);
