@@ -46,6 +46,8 @@ const privateCommand = require('./privateCommand');
       } else {
         result.then(function (msg) {
           message.channel.sendMessage(msg);
+        }).catch((err) => {
+          message.channel.sendMessage(`uh oh, it didn't work because:\n${err}`);
         });
       }
     } else if (!arr[1]) {
